@@ -23,6 +23,8 @@ Plusieurs séries d'I/O (PORTA à PORTG), `x` ci-après. Certaines font
 ## Configuration
 
 * Registres de période des timers: `PR1` à `PR9`, en nombre de cycles du processeur
+* `PRx = n`; va multiplier par n la durée d'une période du timer x et du coup, diviser par n le nombre de périodes par seconde. Pour faire simple, en prennant F=40.10^6 (la fréquence horloge voir clock_init() ) p = n/F [s] et f = F/n [Hz]  \(!Attention! n<2^16 )
+
 * Démarrer le timer: `T1CONbits.TON = 1` à `T9CONbits.TON = 1`
 * Vérifier si la valeur du timer est atteinte: `IFS0bits.T1IF` à `IFS0bits.T9IF`
 * __Il faut remettre ce bit à 0 manuellement !__
