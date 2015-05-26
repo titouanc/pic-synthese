@@ -49,7 +49,8 @@ La conversion n'est pas instantanée (plusieurs microsecondes).
 Dans la suite, remplacer x par le numéro de l'ADC (1 ou 2)
 
 * Mesurer la valeur sur 12 bits en mettant le bit `ADxCON1bits.AD12B` à 1
-* Choisir l'entrée sur laquelle écouter : `ADxCHS0.CHS0A = y` où `y` est l'entrée (`0`, `1` ou `3`) 
+* Choisir l'entrée sur laquelle écouter : `ADxCHS0.CHS0A = y` où `y` est l'entrée
+* Mettre l'entrée choisie en mode analogique : `ADxPCFGLbits.PCFGy = 0`
 * Lancement de la conversion: `ADxCON1bits.SAMP = 0`
 * Quand la conversion est terminée, le bit `IFS0.ADxIF` est mis à 1, et doit être
 remis à 0 manuellement. 
