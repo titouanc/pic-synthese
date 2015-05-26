@@ -39,6 +39,8 @@ un prescaler (diviseur d'horloge), de facteur 8, 64 ou 256.
 * `T1CONbits.TCKPS = 0b10` Prescaling de 64
 * `T1CONbits.TCKPS = 0b11` Prescaling de 256
 
+De nouveau ici si on note m, la valeur de prescale alors la fréquence de référence est F/m, on a alors la période p = m\*n/F [s] et f = F/(n\*m) [Hz] .
+
 # ADC
 
 Le PIC est équippé de 32 entrées analogiques, dont 3 utilisables sur la carte
