@@ -45,22 +45,38 @@ un prescaler (diviseur d'horloge), de facteur 8, 64 ou 256.
 
 De nouveau ici si on note m, la valeur de prescale alors la fréquence de référence est `F/m`, on a alors la période `p = m\*n/F [s] et f = F/(n\*m)` [Hz] .
 
+## Mode 32 bits
+
+Il est possible d'utiliser les timers 2 et 3 (16 bits) ou 4 et 5 en combinaison pour obtenir un timer 32 bits
+
+* Mettre la paire 2/3 en mode 32 bits : `T2CONbits.T32 = 1`
+* Mettre les 16 bits de poids faible dans PR2
+* Mettre les 16 bits de poids fort dans PR3
+* Configurer eventuellement le prescaling sur le timer 2
+* Configurer eventuellement l'interruption sur le timer 3
+* Lancer le timer 2 : `T2CONbits.TON = 1`
+
 # ADC
 
 Le PIC est équippé de 32 entrées analogiques, dont 3 utilisables sur la carte
 d'extension (`AN0`, `AN1`, `AN3`). Les ADC mesurent une tension de 3.3V sur 10 bits.
-La conversion n'est pas instantanée (plusieurs microsecondes). 
+La conversion n'est pas instantanée (plusieurs microsecondes).
+Dans la suite, remplacer x par le numéro de l'ADC (1 ou 2)
 
-* Lancement de la conversion: `AD1CON1bits.SAMP = 0`
-* Quand la conversion est terminée, le bit `IFS0.AD1IF` est mis à 1, et doit être
-remis à 0 manuellement. 
-* Le résultat de la conversion est lisible dans le registre `ADC1BUF0` (16 bits).
+* On peut mesurer la valeur sur 12 bits en mettant le bit `ADxCON1bits.AD12B` à 1
+* Choisir l'entrée sur laquelle écouter : `ADxCHS0.CHS0A = y` où `y` est l'entrée
+* Mettre l'entrée choisie en mode analogique : `ADxPCFGLbits.PCFGy = 0`
+* Activer l'ADC : `ADxCON1bits.ADON = 1`
+* Lancement de la conversion: `ADxCON1bits.SAMP = 0`
+* Quand la conversion est terminée, le bit `ADxCON1bits.DONE` est mis à 1, et doit être remis à 0 manuellement. 
+* Le résultat de la conversion est lisible dans le registre `ADCxBUF0` (16 bits).
 
 ## Relier l'ADC au Timer 3
 
 Il est possible de configurer l'ADC1 pour lancer une conversion sur débordement
-de timer, auquel cas il n'est pas nécessaire de tester et réinitialiser le bit
-`IFS0bits.T3IF`.
+du timer 3 (idem pour l'ADC2 avec le timer 5), auquel cas il n'est pas nécessaire de tester et réinitialiser le bit 
+`IFS0bits.TxIF` par contre il faut remettre le bit `IFS0.ADxIF` à 0.
+La routine d'interruption est `_ADC1Interrupt`
 
 * "Connecter" l'ADC 1 au timer 3: `AD1CON1bits.SSRC = 2`
 * "Connecter" l'ADC 2 au timer 5: `AD2CON1bits.SSRC = 2`
@@ -100,6 +116,8 @@ __Seul les timers 2 et 3 peuvent être utilisés pour le PWM__
 * Définition du timer source: `OCxCONbits.OCTSEL = 0` (__timer 2__ = 0, __timer 3__ = 1)
 * Passage de la borne en mode PWM: `OCxCONbits.OCM = 0b110`
 * Passage de la borne RDx correspondante en sortie :  `TRISDbits.TRISDx = 0`
+
+__Ne pas oublier de lancer le timer__
 
 Exemple:
 
