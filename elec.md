@@ -99,6 +99,10 @@ Il faut ensuite écrire la routine d'interruption correspondante:
     /* Routine d'interruption de fin de conversion de l'ADC1 */
     void _ISR _ADC1Interrupt (void){}
 
+Puis remettre le flag à 0
+`IFS0bits.TxIF = 0`
+`IFS0bits.ADCyF = 0`
+
 # PWM
 
 Le dsPIC33F possède 8 périphériques de comparaison de sortie (Output Compare),
