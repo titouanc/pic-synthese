@@ -59,6 +59,11 @@ d'extension (`AN0`, `AN1`, `AN3`). Les ADC mesurent une tension de 3.3V sur 10 b
 La conversion n'est pas instantanée (plusieurs microsecondes).
 Dans la suite, remplacer x par le numéro de l'ADC (1 ou 2)
 
+* Mettre l'horloge pour contrôler le temps de conversion. La numérisation nécessite
+12 périodes (12 T AD ) en mode 10 bits et 14 périodes (14 T AD ) en mode 12 bits.
+Lorsqu’elle est basée sur l’horloge du cycle machine (F CY ), l’horloge de l’ADC est configurable à l’aide
+des 8 bits ADCS de ADxCON3. La période T AD est alors donnée par :
+Pour qu’une numérisation se déroule correctement, cette période doit être supérieure à 75ns.
 * On peut mesurer la valeur sur 12 bits en mettant le bit `ADxCON1bits.AD12B` à 1
 * Choisir l'entrée sur laquelle écouter : `ADxCHS0.CHS0A = y` où `y` est l'entrée
 * Mettre l'entrée choisie en mode analogique : `ADxPCFGLbits.PCFGy = 0`
