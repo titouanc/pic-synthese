@@ -2,12 +2,50 @@
 
 * Le dsPIC33f tourne à une fréquence de 40MHz (40 millions d'instructions par seonde), dénommée `FCy`
 
+## Niveaux logiques
+
+Abbréviations utilisée dans cette section:
+
+* __Voh__: Voltage Output High
+* __Vih__: Voltage Input High
+* __Vth__: Voltage THreshold
+* __Vil__: Voltage Input Low
+* __Vol__: Voltage Output Low
+
+### Norme TTL
+* __Voh__: 2.4V
+* __Vih__: 2.0V
+* __Vth__: 1.5V
+* __Vil__: 0.8V
+* __Vol__: 0.4V
+
+### Norme HCMOS
+* __Voh__: 4.5V (4mA)
+* __Vih__: 3.5V _(70%)_
+* __Vth__: 2.5V
+* __Vil__: 1.5V _(30%)_
+* __Vol__: 0.3V (4mA)
+
+### PIC18F (compatibilité TTL)
+* __Voh__: 4.3V (3mA)
+* __Vih__: 2.0V
+* __Vth__: 1.5V
+* __Vil__: 0.8V
+* __Vol__: 0.6V (8mA)
+
+### PIC18F (Schmidt Trigger)
+* __Voh__: 4.3V (3mA)
+* __Vih__: 4.0V _(80%)_
+* __Vth__: 2.0V (flan descendant) / 3.0V (flanc montant)
+* __Vil__: 1.0V _(20%)_
+* __Vol__: 0.6V (8mA)
+
 # Entrées / Sorties numériques
 
 Plusieurs séries d'I/O (PORTA à PORTG), `x` ci-après. Certaines font
 8 bits de large, d'autres 16.
 
-**Attention, certaines pattes sont partagées avec l'ADC**
+**Attention, certaines pattes sont partagées avec l'ADC ou le PWM**
 
 ## Registres de direction des pattes I/O
 * 1 = entrée, 0 = sortie
