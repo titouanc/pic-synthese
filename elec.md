@@ -39,7 +39,7 @@ un prescaler (diviseur d'horloge), de facteur 8, 64 ou 256.
 * `T1CONbits.TCKPS = 0b10` Prescaling de 64
 * `T1CONbits.TCKPS = 0b11` Prescaling de 256
 
-De nouveau ici si on note m, la valeur de prescale alors la fréquence de référence est F/m, on a alors la période p = m\*n/F [s] et f = F/(n\*m) [Hz] .
+De nouveau ici si on note m, la valeur de prescale alors la fréquence de référence est `F/m`, on a alors la période `p = m\*n/F [s] et f = F/(n\*m)` [Hz] .
 
 # ADC
 
@@ -161,6 +161,20 @@ Signification des valeurs pour le flag `UxSTAbits.URXISEL`
 
 ## Émission
 
+* Avant d'émettre, il faut vérifier qu'il ya de la place dans le buffer d'émission: `while (UxSTAbits.UTXBF == 1)`
+* Placer le caractère dans le buffer: `UxTXREG = caractère`
+* Attendre que le caractère soit transmis: `while (UxSTAbits.TRMT == 0)`
 
 ## Réception
+
+Si la réception est configurée sur interruption, il faut définir une Interrupt Service Routine
+
+    void _ISR _UxRXInteerupt(void){
+        /* Tant qu'il ya des données disponibles dans le buffer d'entrée... */
+        while (UxSTAbits.URXDA){
+            char received = UxRXREG;
+        }
+    }
+
+Il ne faut pas shifter le buffer d'entrée manuellement.
 
