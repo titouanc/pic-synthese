@@ -60,7 +60,7 @@ Dans la suite, remplacer x par le numéro de l'ADC (1 ou 2)
 
 Il est possible de configurer l'ADC1 pour lancer une conversion sur débordement
 du timer 3 (idem pour l'ADC2 avec le timer 5), auquel cas il n'est pas nécessaire de tester et réinitialiser le bit 
-`IFS0bits.TxIF` par contre il faut remettre le bit `IFS0.ADxIF` 0.
+`IFS0bits.TxIF` par contre il faut remettre le bit `IFS0.ADxIF` à 0.
 La routine d'interruption est `_ADC1Interrupt`
 
 * "Connecter" l'ADC 1 au timer 3: `AD1CON1bits.SSRC = 2`
