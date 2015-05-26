@@ -41,6 +41,17 @@ un prescaler (diviseur d'horloge), de facteur 8, 64 ou 256.
 
 De nouveau ici si on note m, la valeur de prescale alors la fréquence de référence est `F/m`, on a alors la période `p = m\*n/F [s] et f = F/(n\*m)` [Hz] .
 
+## Mode 32 bits
+
+Il est possible d'utiliser les timers 2 et 3 (16 bits) ou 4 et 5 en combinaison pour obtenir un timer 32 bits
+
+* Mettre la paire 2/3 en mode 32 bits : `T2CONbits.T32 = 1`
+* Mettre les 16 bits de poids faible dans PR2
+* Mettre les 16 bits de poids fort dans PR3
+* Configurer eventuellement le prescaling sur le timer 2
+* Configurer eventuellement l'interruption sur le timer 3
+* Lancer le timer 2 : `T2CONbits.TON = 1`
+
 # ADC
 
 Le PIC est équippé de 32 entrées analogiques, dont 3 utilisables sur la carte
