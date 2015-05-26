@@ -1,9 +1,51 @@
+# Informations générales
+
+* Le dsPIC33f tourne à une fréquence de 40MHz (40 millions d'instructions par seonde), dénommée `FCy`
+
+## Niveaux logiques
+
+Abbréviations utilisée dans cette section:
+
+* __Voh__: Voltage Output High
+* __Vih__: Voltage Input High
+* __Vth__: Voltage THreshold
+* __Vil__: Voltage Input Low
+* __Vol__: Voltage Output Low
+
+### Norme TTL
+* __Voh__: 2.4V
+* __Vih__: 2.0V
+* __Vth__: 1.5V
+* __Vil__: 0.8V
+* __Vol__: 0.4V
+
+### Norme HCMOS
+* __Voh__: 4.5V (4mA)
+* __Vih__: 3.5V _(70%)_
+* __Vth__: 2.5V
+* __Vil__: 1.5V _(30%)_
+* __Vol__: 0.3V (4mA)
+
+### PIC18F (compatibilité TTL)
+* __Voh__: 4.3V (3mA)
+* __Vih__: 2.0V
+* __Vth__: 1.5V
+* __Vil__: 0.8V
+* __Vol__: 0.6V (8mA)
+
+### PIC18F (Schmidt Trigger)
+* __Voh__: 4.3V (3mA)
+* __Vih__: 4.0V _(80%)_
+* __Vth__: 2.0V (flan descendant) / 3.0V (flanc montant)
+* __Vil__: 1.0V _(20%)_
+* __Vol__: 0.6V (8mA)
+
 # Entrées / Sorties numériques
 
 Plusieurs séries d'I/O (PORTA à PORTG), `x` ci-après. Certaines font
 8 bits de large, d'autres 16.
 
-**Attention, certaines pattes sont partagées avec l'ADC**
+**Attention, certaines pattes sont partagées avec l'ADC ou le PWM**
 
 ## Registres de direction des pattes I/O
 * 1 = entrée, 0 = sortie
@@ -22,8 +64,8 @@ Plusieurs séries d'I/O (PORTA à PORTG), `x` ci-après. Certaines font
 
 ## Configuration
 
-* Registres de période des timers: `PR1` à `PR9`, en nombre de cycles du processeur
-* `PRx = n`; va multiplier par n la durée d'une période du timer x et du coup, diviser par n le nombre de périodes par seconde. Pour faire simple, en prennant F=40.10^6 (la fréquence horloge voir clock_init() ) p = n/F [s] et f = F/n [Hz]  \(!Attention! n<2^16 )
+* Registres de période des timers: `PR1` à `PR9`, en nombre de cycles du processeur (même unité que `FCy`)
+* `PRx = n`; va multiplier par n la durée d'une période du timer x et du coup, diviser par n le nombre de périodes par seconde. Pour faire simple, en prennant `p = n/FCy` (secondes) et `f = FCy/n` (Hz)  (!Attention! `n < 2^16` )
 
 * Démarrer le timer: `T1CONbits.TON = 1` à `T9CONbits.TON = 1`
 * Vérifier si la valeur du timer est atteinte: `IFS0bits.T1IF` à `IFS0bits.T9IF`
@@ -39,7 +81,7 @@ un prescaler (diviseur d'horloge), de facteur 8, 64 ou 256.
 * `T1CONbits.TCKPS = 0b10` Prescaling de 64
 * `T1CONbits.TCKPS = 0b11` Prescaling de 256
 
-De nouveau ici si on note m, la valeur de prescale alors la fréquence de référence est `F/m`, on a alors la période `p = m\*n/F [s] et f = F/(n\*m)` [Hz] .
+De nouveau ici si on note m, la valeur de prescale alors la fréquence de référence est `F/m`, on a alors la période `p = m*n/F [s] et f = F/(n*m)` [Hz] .
 
 ## Mode 32 bits
 
@@ -118,19 +160,22 @@ __Seul les timers 2 et 3 peuvent être utilisés pour le PWM__
 
 * Définition de la période du timer: `PR2 = periode` ou `PR3 = periode`
 * Définition de la période "active": `OCxRS = periode_active`
-* Mettre OCx en PWM : `OCxCONbits.OCM = 0b110
-* Définition du timer à utiliser : `OCxCONbits.OCTSEL = 0` (0 pour timer 2, 1 pour timer 3)
-
-__Ne pas oublier de mettre la patte RD(x-1) en sortie__
+* Définition du timer source: `OCxCONbits.OCTSEL = 0` (__timer 2__ = 0, __timer 3__ = 1)
+* Passage de la borne en mode PWM: `OCxCONbits.OCM = 0b110`
+* Passage de la borne RDx correspondante en sortie :  `TRISDbits.TRISDx = 0`
 
 __Ne pas oublier de lancer le timer__
-
 
 Exemple:
 
     PR2 = 40000   // Timer 2 à 1kHz
+    OC1CONbits.OCM = 0b110 // passage en mode PWM
     OC1RS = 10000 // Période active de 1/4 de la période du timer 
                   // (25% de puissance moyenne)
+    OC1CONbits.OCTSEL = 0 //timer source : 2
+    TRISDbits.TRISD0 = 0 // OC1->RD0, passage de la born RD0 en sortie
+    T2CONbits.TON = 1 // lancement de la PWM
+    
 
 # Communication série (UART)
 
