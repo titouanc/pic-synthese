@@ -85,6 +85,8 @@ tel. Le principe du PWM peut être vu comme un timer à deux registres de compar
 Pour ce faire, on configure un timer usuellement, et on définit une période
 active dans un deuxième registre, dans les mêmes unités que la période du timer.
 
+__Seul les timers 2 et 3 peuvent être utilisés pour le PWM__
+
 ## Configuration
 
 * Définition de la période du timer: `PR2 = periode` ou `PR3 = periode`
@@ -98,4 +100,53 @@ Exemple:
 
 # Communication série (UART)
 
+__UART: Universal Asynchronous Receiver Transmitter__. Le dsPIC33f en comporte 2
+qui utilisent le protocole série standard RS-232.
+
+Il faut configurer plusieurs paramètres:
+
+* Le baud-rate (souvent 9600, 62500 ou 115200 bauds)
+* La taille d'un symbole (nombre de bits, généralement 8)
+* Le bit de parité: aucun, pair ou impair (contrôle d'erreur)
+* Le stop bit: temps de silence après l'émission d'un symbole (généralement 1 bit)
+
+On désigne parfois le format en plus court. Exemple: 8N1 = symboles de 8 bits,
+pas de bit de parité, 1 stop bit.
+
+
+## Configuration
+Les UARTs 1 et 2 sont dénommés `x` ci après
+
+* Ecrire le baud rate dans UxBRG, selon la formule `( FCy/(16*bauds) ) - 1`
+* Si besoin d'un plus grand baud rate, on peut mettre le bit UxMODEbits.BRGH à 1, la formule devient `( FCy/(4*bauds) ) - 1`
+* Sélection du mode de parité et de la taille des symboles: `UxMODEbits.PDSEL = 0b00`
+* Sélection du nombre de bits de stop: `UxMODEbits.STSEL = 0` (`0`=1 stop bit, `1`=2stop bits)
+* Sélection du mode de réception: `UxSTAbits.URXISEL = 0b00`
+* Activation de l'UART: `UxMODEbits.UARTEN = 1`
+* Activation de l'émetteur: `UxSTAbits.UTXEN = 1` (uniquement si on souhaite émettre)
+* Activation de l'interruption: `IEC0bits.U1RXIE` pour l'UART 1, `IEC1bits.U2RXIE` pour l'UART 2
+
+### Modes de parité
+
+Signification des valeurs pour le flag `UxMODEbits.PDSEL`
+
+* `0b00` 8 bits de données, pas de bit de parité
+* `0b01` 8 bits de données, parité paire
+* `0b10` 8 bits de données, parité impaire
+* `0b11` 9 bits de données, pas de bit de parité
+
+### Modes de réception
+
+Signification des valeurs pour le flag `UxSTAbits.URXISEL`
+
+* `0b00` Déclenchement de l'interruption après réception d'un byte
+* `0b10` Déclenchement de l'interruption quand le buffer est rempli aux 3/4
+* `0b11` Déclenchement de l'interruption quand le buffer de réception est rempli
+
+
+
+## Émission
+
+
+## Réception
 
