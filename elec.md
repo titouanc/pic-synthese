@@ -113,7 +113,7 @@ Pour qu’une numérisation se déroule correctement, cette période doit être 
 * `ADxCON1bits.ASAM = 1` : autoreset à 1 de `ADxCON1bits.SAMP` pour relancer l'échantillonage dès qu'une conversion est terminée. Sinon, il faudrait manuellement relancer l'échantillonage : `ADxCON1bits.SAMP = 1`.
 * Activer l'ADC : `ADxCON1bits.ADON = 1`
 * Mettre fin à l'échantillonage et lancer la conversion: `ADxCON1bits.SAMP = 0` Cette mise à 0 est automatique si un timer est relié au convertisseur.
-* Quand la conversion est terminée, le bit `ADxCON1bits.DONE` est mis à 1, est automatiquement remis à 0 au lancement d'une conversion. Il est toutefois préférable de consulter le flag d'interruption (`IEC0bits.ADyIE`)
+* Quand la conversion est terminée, le bit `ADxCON1bits.DONE` est mis à 1, est automatiquement remis à 0 au lancement d'une conversion. Il est toutefois préférable de consulter le flag d'interruption (`IEC0bits.ADxIE`)
 * Le résultat de la conversion est lisible dans le registre `ADCxBUF0` (16 bits).
 
 ## Relier l'ADC au Timer 3
