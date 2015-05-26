@@ -98,12 +98,19 @@ __Seul les timers 2 et 3 peuvent être utilisés pour le PWM__
 * Définition de la période du timer: `PR2 = periode` ou `PR3 = periode`
 * Définition de la période "active": `OCxRS = periode_active`
 * Définition du timer source: `OCxCONbits.OCTSEL = 0` (__timer 2__ = 0, __timer 3__ = 1)
+* Passage de la borne en mode PWM: `OCxCONbits.OCM = 0b110`
+* Passage de la borne RDx correspondante en sortie :  `TRISDbits.TRISDx = 0`
 
 Exemple:
 
     PR2 = 40000   // Timer 2 à 1kHz
+    OC1CONbits.OCM = 0b110 // passage en mode PWM
     OC1RS = 10000 // Période active de 1/4 de la période du timer 
                   // (25% de puissance moyenne)
+    OC1CONbits.OCTSEL = 0 //timer source : 2
+    TRISDbits.TRISD0 = 0 // OC1->RD0, passage de la born RD0 en sortie
+    T2CONbits.TON = 1 // lancement de la PWM
+    
 
 # Communication série (UART)
 
