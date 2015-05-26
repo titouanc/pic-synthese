@@ -97,21 +97,23 @@ Il est possible d'utiliser les timers 2 et 3 (16 bits) ou 4 et 5 en combinaison 
 # ADC
 
 Le PIC est équippé de 32 entrées analogiques, dont 3 utilisables sur la carte
-d'extension (`AN0`, `AN1`, `AN3`). Les ADC mesurent une tension de 3.3V sur 10 bits.
+d'extension (`AN0`, `AN1`, `AN3`). Les ADC convertissent une tension de max 3.3V sur 10 ou 12 bits.
 La conversion n'est pas instantanée (plusieurs microsecondes).
+Il y a deux étapes : l'échantillonage et la conversion. La fin de l'échantillonage et le début de la conversion peut être gérée par un timer ou manuellement. Le début de l'échantillonage peut être automatique ou manuel. La durée de la conversion est paramétrable par l'horloge interne du convertisseur.
 Dans la suite, remplacer x par le numéro de l'ADC (1 ou 2)
 
 * Mettre l'horloge pour contrôler le temps de conversion. La numérisation nécessite
 12 périodes (12 T AD ) en mode 10 bits et 14 périodes (14 T AD ) en mode 12 bits.
 Lorsqu’elle est basée sur l’horloge du cycle machine (F CY ), l’horloge de l’ADC est configurable à l’aide
-des 8 bits ADCS de ADxCON3. La période T AD est alors donnée par :
+des 8 bits ADCS de ADxCON3. La période T AD est alors donnée par : (AD1CON3bits.ADCS+1)/F_cy
 Pour qu’une numérisation se déroule correctement, cette période doit être supérieure à 75ns.
 * On peut mesurer la valeur sur 12 bits en mettant le bit `ADxCON1bits.AD12B` à 1
 * Choisir l'entrée sur laquelle écouter : `ADxCHS0.CHS0A = y` où `y` est l'entrée
 * Mettre l'entrée choisie en mode analogique : `ADxPCFGLbits.PCFGy = 0`
+* `ADxCON1bits.ASAM = 1` : autoreset à 1 de `ADxCON1bits.SAMP` pour relancer l'échantillonage dès qu'une conversion est terminée. Sinon, il faudrait manuellement relancer l'échantillonage : `ADxCON1bits.SAMP = 1`.
 * Activer l'ADC : `ADxCON1bits.ADON = 1`
-* Lancement de la conversion: `ADxCON1bits.SAMP = 0`
-* Quand la conversion est terminée, le bit `ADxCON1bits.DONE` est mis à 1, et doit être remis à 0 manuellement. 
+* Mettre fin à l'échantillonage et lancer la conversion: `ADxCON1bits.SAMP = 0` Cette mise à 0 est automatique si un timer est relié au convertisseur.
+* Quand la conversion est terminée, le bit `ADxCON1bits.DONE` est mis à 1, est automatiquement remis à 0 au lancement d'une conversion. Il est toutefois préférable de consulter le flag d'interruption (`IEC0bits.ADyIE`)
 * Le résultat de la conversion est lisible dans le registre `ADCxBUF0` (16 bits).
 
 ## Relier l'ADC au Timer 3
