@@ -5,3 +5,4 @@ all: main.pdf
 
 main.pdf: main.tex elec.tex
 	pdflatex $<
+	pdflatex $<
