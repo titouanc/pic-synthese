@@ -155,6 +155,7 @@ Les UARTs 1 et 2 sont dénommés `x` ci après
 * Si besoin d'un plus grand baud rate, on peut mettre le bit UxMODEbits.BRGH à 1, la formule devient `( FCy/(4*bauds) ) - 1`
 * Sélection du mode de parité et de la taille des symboles: `UxMODEbits.PDSEL = 0b00`
 * Sélection du nombre de bits de stop: `UxMODEbits.STSEL = 0` (`0`=1 stop bit, `1`=2stop bits)
+* Controle de flux : UxMODEbits.UEN = 0
 * Sélection du mode de réception: `UxSTAbits.URXISEL = 0b00`
 * Activation de l'UART: `UxMODEbits.UARTEN = 1`
 * Activation de l'émetteur: `UxSTAbits.UTXEN = 1` (uniquement si on souhaite émettre)
