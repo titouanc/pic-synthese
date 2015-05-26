@@ -98,6 +98,13 @@ __Seul les timers 2 et 3 peuvent être utilisés pour le PWM__
 
 * Définition de la période du timer: `PR2 = periode` ou `PR3 = periode`
 * Définition de la période "active": `OCxRS = periode_active`
+* Mettre OCx en PWM : `OCxCONbits.OCM = 0b110
+* Définition du timer à utiliser : `OCxCONbits.OCTSEL = 0` (0 pour timer 2, 1 pour timer 3)
+
+__Ne pas oublier de mettre la patte RD(x-1) en sortie__
+
+__Ne pas oublier de lancer le timer__
+
 
 Exemple:
 
