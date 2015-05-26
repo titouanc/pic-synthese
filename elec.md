@@ -73,7 +73,7 @@ Plusieurs séries d'I/O (PORTA à PORTG), `x` ci-après. Certaines font
 
 ## Prescaling
 
-Les registres de timer font 16 bits (max 65535 = 1638s). On peut utiliser
+Les registres de timer font 16 bits (max `65535/FCy = 1638` microsecondes). On peut utiliser
 un prescaler (diviseur d'horloge), de facteur 8, 64 ou 256.
 
 * `T1CONbits.TCKPS = 0b00` Pas de prescaling (1)
