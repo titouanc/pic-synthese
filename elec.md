@@ -105,6 +105,8 @@ La conversion n'est pas instantanée (plusieurs microsecondes).
 Il y a deux étapes : l'échantillonage et la conversion. La fin de l'échantillonage et le début de la conversion peut être gérée par un timer ou manuellement. Le début de l'échantillonage peut être automatique ou manuel. La durée de la conversion est paramétrable par l'horloge interne du convertisseur.
 Dans la suite, remplacer x par le numéro de l'ADC (1 ou 2)
 
+## Configuration
+
 * Mettre l'horloge pour contrôler le temps de conversion. La numérisation nécessite
 12 périodes (12 T AD ) en mode 10 bits et 14 périodes (14 T AD ) en mode 12 bits.
 Lorsqu’elle est basée sur l’horloge du cycle machine (F CY ), l’horloge de l’ADC est configurable à l’aide
@@ -115,8 +117,13 @@ Pour qu’une numérisation se déroule correctement, cette période doit être 
 * Mettre l'entrée choisie en mode analogique : `ADxPCFGLbits.PCFGy = 0`
 * `ADxCON1bits.ASAM = 1` : autoreset à 1 de `ADxCON1bits.SAMP` pour relancer l'échantillonage dès qu'une conversion est terminée. Sinon, il faudrait manuellement relancer l'échantillonage : `ADxCON1bits.SAMP = 1`.
 * Activer l'ADC : `ADxCON1bits.ADON = 1`
+* Si on veut déclencher une interruption à la fin de la conversion, on active le bit correspondant: `IEC0bits.ADxIE = 1`
+
+## Conversion analogique
+
 * Mettre fin à l'échantillonage et lancer la conversion: `ADxCON1bits.SAMP = 0` Cette mise à 0 est automatique si un timer est relié au convertisseur.
-* Quand la conversion est terminée, le bit `ADxCON1bits.DONE` est mis à 1 et est automatiquement remis à 0 au lancement d'une conversion. Il est toutefois préférable de consulter le flag d'interruption (`IEC0bits.ADxIE`)
+* Quand la conversion est terminée, le bit `ADxCON1bits.DONE` est mis à 1 et est automatiquement remis à 0 au lancement d'une conversion.
+* On peut consulter le flag d'interruption (`IEC0bits.ADxIF`)
 * Le résultat de la conversion est lisible dans le registre `ADCxBUF0` (16 bits).
 
 ## Relier l'ADC au Timer 3
@@ -147,8 +154,8 @@ Il faut ensuite écrire la routine d'interruption correspondante:
     void _ISR _ADC1Interrupt (void){}
 
 Puis remettre le flag à 0
-`IFS0bits.TxIF = 0`
-`IFS0bits.ADCyF = 0`
+* `IFS0bits.TxIF = 0` pour un timer
+* `IFS0bits.ADCyIF = 0` pour un ADC
 
 # PWM
 
