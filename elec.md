@@ -68,6 +68,7 @@ Plusieurs séries d'I/O (PORTA à PORTG), `x` ci-après. Certaines font
 
 * Registres de période des timers: `PR1` à `PR9`, en nombre de cycles du processeur (même unité que `FCy`)
 * `PRx = n`; va multiplier par n la durée d'une période du timer x et du coup, diviser par n le nombre de périodes par seconde. Pour faire simple, en prennant `p = n/FCy` (secondes) et `f = FCy/n` (Hz)  (!Attention! `n < 2^16` )
+* Ne pas oublier que le timer se termine sur un comparateur d'égalité (quand le compteur est _**égal**_ à `PRx`). Pour générer une interruption tous les 4000 cycles, il faut donc configurer `PRx = 3999` (sinon, on compte 4001 cycles)
 
 * Démarrer le timer: `T1CONbits.TON = 1` à `T9CONbits.TON = 1`
 * Vérifier si la valeur du timer est atteinte: `IFS0bits.T1IF` à `IFS0bits.T9IF`
