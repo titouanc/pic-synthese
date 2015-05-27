@@ -235,7 +235,7 @@ Signification des valeurs pour le flag `UxSTAbits.URXISEL`
 * `0b00` ou `0b01` Déclenchement de l'interruption après réception d'un symbole
 * `0b10` Déclenchement de l'interruption quand le buffer est rempli aux 3/4
 * `0b11` Déclenchement de l'interruption quand le buffer de réception est rempli
-* 
+
 ### Modes d'émission
 
 Signification des valeurs pour le flag `UxSTAbits.UTXISEL`
