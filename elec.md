@@ -214,6 +214,7 @@ Les UARTs 1 et 2 sont dénommés `x` ci après
 * Sélection du nombre de bits de stop: `UxMODEbits.STSEL = 0` (`0`=1 stop bit, `1`=2stop bits)
 * Controle de flux : UxMODEbits.UEN = 0
 * Sélection du mode de réception: `UxSTAbits.URXISEL = 0b00`
+* Sélection du mode d'interruption pour l'envoi: `UxSTAbits.UTXISEL = 0b00`
 * Activation de l'UART: `UxMODEbits.UARTEN = 1`
 * Activation de l'émetteur: `UxSTAbits.UTXEN = 1` (uniquement si on souhaite émettre)
 * Activation de l'interruption: `IEC0bits.U1RXIE` pour l'UART 1, `IEC1bits.U2RXIE` pour l'UART 2
@@ -231,28 +232,38 @@ Signification des valeurs pour le flag `UxMODEbits.PDSEL`
 
 Signification des valeurs pour le flag `UxSTAbits.URXISEL`
 
-* `0b00` Déclenchement de l'interruption après réception d'un symbole
+* `0b00` ou `0b01` Déclenchement de l'interruption après réception d'un symbole
 * `0b10` Déclenchement de l'interruption quand le buffer est rempli aux 3/4
 * `0b11` Déclenchement de l'interruption quand le buffer de réception est rempli
+* 
+### Modes d'émission
 
+Signification des valeurs pour le flag `UxSTAbits.UTXISEL`
+
+* `0b00` Déclenchement de l'interruption quand une place vient d'être libérée dans le buffer (envoi en cours)
+* `0b01` Déclenchement de l'interruption quand tous les envois sont terminés
+* `0b10` Déclenchement de l'interruption quand le buffer vient d'être vidé (envoi du dernier message en cours)
+* `0b11` Réservé
 
 
 ## Émission
 
-* Avant d'émettre, il faut vérifier qu'il ya de la place dans le buffer d'émission: `while (UxSTAbits.UTXBF == 1)`
-* Placer le caractère dans le buffer: `UxTXREG = caractère`
-* Attendre que le caractère soit transmis: `while (UxSTAbits.TRMT == 0)`
+* Avant d'émettre, il faut vérifier qu'il y a de la place dans le buffer d'émission 
+(BufferFull) : `while (UxSTAbits.UTXBF == 1)`
+* Placer le caractère dans le buffer (FIFO): `UxTXREG = caractère`
+* Attendre que le caractère soit transmis: `while (UxSTAbits.TRMT == 0)` (facultatif)
 
 ## Réception
 
 Si la réception est configurée sur interruption, il faut définir une Interrupt Service Routine
 
-    void _ISR _UxRXInteerupt(void){
+    void _ISR _UxRXInterrupt(void){
         /* Tant qu'il ya des données disponibles dans le buffer d'entrée... */
         while (UxSTAbits.URXDA){
             char received = UxRXREG;
         }
     }
 
-Il ne faut pas shifter le buffer d'entrée manuellement (FIFO hardware).
+Il ne faut pas shifter le buffer d'entrée manuellement (FIFO hardware). 
+Attention, une donnée lue est supprimée du buffer, la lecture suivante passera au symbole suivant.
 
