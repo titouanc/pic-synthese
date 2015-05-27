@@ -154,7 +154,7 @@ Puis remettre le flag à 0
 Le dsPIC33F possède 8 périphériques de comparaison de sortie (Output Compare),
 connectés sur les ports `RD0` à `RD7`, renommés `OC1` à `OC8` si utilisés comme
 tel. Le principe du PWM peut être vu comme un timer à deux registres de comparaison 
-(une registre de période totale, un registre de période active).
+(un registre de période totale, un registre de période active).
 
 Pour ce faire, on configure un timer usuellement, et on définit une période
 active dans un deuxième registre, dans les mêmes unités que la période du timer.
@@ -197,7 +197,7 @@ Il faut configurer plusieurs paramètres:
 * La taille d'un symbole (nombre de bits, généralement 8)
 * Le bit de parité: aucun, pair ou impair (contrôle d'erreur)
 * Le stop bit: marque un stop après l'émission d'un symbole (généralement 1 bit)
-car on ignore combien de temps peut se passer avant la prochaine émission d'un symbole.
+car on ignore combien de temps peut se passer avant la prochaine émission d'un symbole et il faut s'assurer que la ligne soit en état LO pour recevoir le start bit suivant.
 
 On désigne parfois le format en plus court. Exemple: 8N1 = symboles de 8 bits,
 pas de bit de parité, 1 stop bit.
