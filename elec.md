@@ -1,8 +1,10 @@
 # Informations générales
 
-* Le dsPIC33f tourne à une fréquence de 40MHz (40 millions d'instructions par seonde), dénommée `FCy`
+* Le dsPIC33f tourne à une fréquence de 40MHz (40 millions d'instructions par seconde), dénommée `FCy`
 
 ## Niveaux logiques
+
+La marge de bruit d'une sortie X vers une entrée Y est donnée, pour LO : __VilY__ - __VolX__ , pour HI : __VihY__ - __VohX__ 
 
 Abbréviations utilisée dans cette section:
 
@@ -113,7 +115,7 @@ Pour qu’une numérisation se déroule correctement, cette période doit être 
 * `ADxCON1bits.ASAM = 1` : autoreset à 1 de `ADxCON1bits.SAMP` pour relancer l'échantillonage dès qu'une conversion est terminée. Sinon, il faudrait manuellement relancer l'échantillonage : `ADxCON1bits.SAMP = 1`.
 * Activer l'ADC : `ADxCON1bits.ADON = 1`
 * Mettre fin à l'échantillonage et lancer la conversion: `ADxCON1bits.SAMP = 0` Cette mise à 0 est automatique si un timer est relié au convertisseur.
-* Quand la conversion est terminée, le bit `ADxCON1bits.DONE` est mis à 1, est automatiquement remis à 0 au lancement d'une conversion. Il est toutefois préférable de consulter le flag d'interruption (`IEC0bits.ADxIE`)
+* Quand la conversion est terminée, le bit `ADxCON1bits.DONE` est mis à 1 et est automatiquement remis à 0 au lancement d'une conversion. Il est toutefois préférable de consulter le flag d'interruption (`IEC0bits.ADxIE`)
 * Le résultat de la conversion est lisible dans le registre `ADCxBUF0` (16 bits).
 
 ## Relier l'ADC au Timer 3
@@ -151,17 +153,22 @@ Puis remettre le flag à 0
 
 Le dsPIC33F possède 8 périphériques de comparaison de sortie (Output Compare),
 connectés sur les ports `RD0` à `RD7`, renommés `OC1` à `OC8` si utilisés comme
-tel. Le principe du PWM peut être vu comme un timer à deux registres de comparaison.
+tel. Le principe du PWM peut être vu comme un timer à deux registres de comparaison 
+(une registre de période totale, un registre de période active).
 
 Pour ce faire, on configure un timer usuellement, et on définit une période
 active dans un deuxième registre, dans les mêmes unités que la période du timer.
+
+Le rapport entre la période active et la période totale peut s'appliquer 
+à la tension d'alimentation d'un moteur, par exemple.
+Ex : `rapport = periode_active/periode` alors `tensionMoyenneMoteur = tensionAlimMoteur * rapport`
 
 __Seul les timers 2 et 3 peuvent être utilisés pour le PWM__
 
 ## Configuration
 
 * Définition de la période du timer: `PR2 = periode` ou `PR3 = periode`
-* Définition de la période "active": `OCxRS = periode_active`
+* Définition de la période "active": `OCxRS = periode_active` (inférieur à PR2)
 * Définition du timer source: `OCxCONbits.OCTSEL = 0` (__timer 2__ = 0, __timer 3__ = 1)
 * Passage de la borne en mode PWM: `OCxCONbits.OCM = 0b110`
 * Passage de la borne RDx correspondante en sortie :  `TRISDbits.TRISDx = 0`
@@ -189,16 +196,19 @@ Il faut configurer plusieurs paramètres:
 * Le baud-rate (souvent 9600, 62500 ou 115200 bauds)
 * La taille d'un symbole (nombre de bits, généralement 8)
 * Le bit de parité: aucun, pair ou impair (contrôle d'erreur)
-* Le stop bit: temps de silence après l'émission d'un symbole (généralement 1 bit)
+* Le stop bit: marque un stop après l'émission d'un symbole (généralement 1 bit)
+car on ignore combien de temps peut se passer avant la prochaine émission d'un symbole.
 
 On désigne parfois le format en plus court. Exemple: 8N1 = symboles de 8 bits,
 pas de bit de parité, 1 stop bit.
+
+Certains paramètres doivent être fixés en fonction du périphériques de l'autre côté de la connexion.
 
 
 ## Configuration
 Les UARTs 1 et 2 sont dénommés `x` ci après
 
-* Ecrire le baud rate dans UxBRG, selon la formule `( FCy/(16*bauds) ) - 1`
+* Ecrire le baud rate dans UxBRG, selon la formule `( FCy/(16*baudrate) ) - 1`
 * Si besoin d'un plus grand baud rate, on peut mettre le bit UxMODEbits.BRGH à 1, la formule devient `( FCy/(4*bauds) ) - 1`
 * Sélection du mode de parité et de la taille des symboles: `UxMODEbits.PDSEL = 0b00`
 * Sélection du nombre de bits de stop: `UxMODEbits.STSEL = 0` (`0`=1 stop bit, `1`=2stop bits)
@@ -221,7 +231,7 @@ Signification des valeurs pour le flag `UxMODEbits.PDSEL`
 
 Signification des valeurs pour le flag `UxSTAbits.URXISEL`
 
-* `0b00` Déclenchement de l'interruption après réception d'un byte
+* `0b00` Déclenchement de l'interruption après réception d'un symbole
 * `0b10` Déclenchement de l'interruption quand le buffer est rempli aux 3/4
 * `0b11` Déclenchement de l'interruption quand le buffer de réception est rempli
 
@@ -244,5 +254,5 @@ Si la réception est configurée sur interruption, il faut définir une Interrup
         }
     }
 
-Il ne faut pas shifter le buffer d'entrée manuellement.
+Il ne faut pas shifter le buffer d'entrée manuellement (FIFO hardware).
 
